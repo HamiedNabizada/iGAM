@@ -1,6 +1,7 @@
 #include "millingMachine.h"
 
-MillingMachine::MillingMachine(std::filesystem::path pathJsonFile, bool printInformation) {
+MillingMachine::MillingMachine(std::filesystem::path pathJsonFile, Config &config) {
+	
 	std::cout << "Loading milling machine from file: " << pathJsonFile.string() << std::endl;
 	std::ifstream filestream(pathJsonFile.c_str());
 	json jsonData;
@@ -11,14 +12,14 @@ MillingMachine::MillingMachine(std::filesystem::path pathJsonFile, bool printInf
 	std::string toolFile = jsonData.at("tools").at("filename");
 	std::filesystem::path pathToolFile = pathJsonFile.replace_filename(toolFile);
 	std::cout << "path Tool File: " << pathToolFile << std::endl;
-	loadToolGeometry(pathToolFile);
-	if (printInformation) {
+	loadToolGeometry(pathToolFile, config.getPrintMillingToolInformation());
+	if (config.getPrintMachineInformation()) {
 		printGeneralInformation();
 		printTechnicalInformation();
 	};
 };
 
-void MillingMachine::checkManufacturability(Mesh workingPieceGeometry, RawMaterial rawMaterial) {
+void MillingMachine::checkManufacturability(Mesh workingPieceGeometry, RawMaterial rawMaterial, Config &config) {
 	std::filesystem::path outputPath = std::filesystem::current_path();
 	
 	outputPath /= this->company;
@@ -27,41 +28,50 @@ void MillingMachine::checkManufacturability(Mesh workingPieceGeometry, RawMateri
 
 	// Step0: Check if rawMaterial fit
 	rawMaterial.geometry = centerGeometry(rawMaterial.geometry, false);
-	
-	std::ofstream ofs(outputPath / "selectedRawMaterial.off");
-	CGAL::write_off(ofs, rawMaterial.geometry);
-	ofs.close();
+	std::ofstream ofs;
+	if (config.getSaveSelectedRawMaterial()) {
+		std::string filename = "selectedRawMaterial_id_" + rawMaterial.id + ".off";
+		ofs.open(outputPath / filename);
+		CGAL::write_off(ofs, rawMaterial.geometry);
+		ofs.close();
+	};
 
 	// Step1: Compute Convex hull of workingPieceGeometry
 	Mesh convexHullMesh;
 	CGAL::convex_hull_3(workingPieceGeometry.points().begin(), workingPieceGeometry.points().end(), convexHullMesh);
-	ofs.open(outputPath / "convexHull.off");
-	CGAL::write_off(ofs, convexHullMesh);
-	ofs.close();
+	if (config.getSaveConvexHull()) {
+		ofs.open(outputPath / "convexHull.off");
+		CGAL::write_off(ofs, convexHullMesh);
+		ofs.close();
+	};
 	// Step2: Compute Difference Geometry
 	Mesh diffGeometryMesh;
 	CGAL::Polygon_mesh_processing::corefine_and_compute_difference(convexHullMesh, workingPieceGeometry, diffGeometryMesh);
-	ofs.open(outputPath / "diffGeometry.off");
-	CGAL::write_off(ofs, diffGeometryMesh);
-	ofs.close();
+	if (config.getSaveDiffGeometry()) {
+		ofs.open(outputPath / "diffGeometry.off");
+		CGAL::write_off(ofs, diffGeometryMesh);
+		ofs.close();
+	};
 	// Step3: Slice DiffGeometry
 	std::map<std::string, std::vector<Polygon_2>> slicesDiffGeometryPolygon = sliceDiffGeometry(diffGeometryMesh);
 
 	// Step4: Compute Offset
-	std::map<std::string, std::vector<Polygon_with_holes_ptr_vector>> offsets = computeOffset(millingTool.diameter / 2.0, slicesDiffGeometryPolygon);
+	std::map<std::string, std::vector<Polygon_with_holes_ptr_vector>> offsets = computeOffset(millingTool.diameter / 2.0, slicesDiffGeometryPolygon, config.getSaveOffests(), outputPath);
 
 	// Step5: Minkowski Summen der abtragbaren volumen erstellen (TODO: Richtige CD implementieren)
-	std::vector<Mesh> removableVolumes = computeRemovableVolumes(offsets, workingPieceGeometry, millingTool.toolGeometry, convexHullMesh);
+	std::vector<Mesh> removableVolumes = computeRemovableVolumes(offsets, workingPieceGeometry, millingTool.toolGeometry, convexHullMesh, config, outputPath);
 
 	// Step6: Compute final geometry
-	computeLeftover(removableVolumes, convexHullMesh);
-
+	computeLeftover(removableVolumes, convexHullMesh, config, outputPath);
 };
 
-void MillingMachine::loadToolGeometry(std::filesystem::path pathToolFile) {
+void MillingMachine::loadToolGeometry(std::filesystem::path pathToolFile, bool printMillingToolInformation) {
 	millingTool.loadMillingTool(pathToolFile);
 
-	std::cout << millingTool.diameter << std::endl;
+	if (printMillingToolInformation) {
+		std::cout << "Imported milling tool: " << pathToolFile.filename().string() << std::endl;
+		std::cout << "diameter: " << millingTool.diameter << std::endl;
+	};
 };
 
 void MillingMachine::serializeGeneralInformation(json object) {

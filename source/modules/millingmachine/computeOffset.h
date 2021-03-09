@@ -1,4 +1,5 @@
 #pragma once
+#include <filesystem>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Surface_mesh.h>
 #include <CGAL/Polygon_2.h>
@@ -7,6 +8,7 @@
 #include <CGAL/create_offset_polygons_from_polygon_with_holes_2.h>
 #include <boost/shared_ptr.hpp>
 #include <vector>
+#include "dump_to_eps.h"
 
 typedef CGAL::Exact_predicates_exact_constructions_kernel   K;
 
@@ -22,4 +24,4 @@ typedef std::vector<Polygon_with_holes_ptr>                 Polygon_with_holes_p
 /*
 Berechnet Offset, gibt Map zurück Key=Z-Koordinate, Value=Vector mit allen Offesets an dieser Stelle.
 */
-std::map<std::string, std::vector<Polygon_with_holes_ptr_vector>> computeOffset(double offset, std::map<std::string, std::vector<Polygon_2>> slicesDiffGeometryPolygon);
+std::map<std::string, std::vector<Polygon_with_holes_ptr_vector>> computeOffset(double offset, std::map<std::string, std::vector<Polygon_2>> slicesDiffGeometryPolygon, bool saveEPSFiles, std::filesystem::path out);

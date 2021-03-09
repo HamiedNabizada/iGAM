@@ -25,4 +25,5 @@ public:
 private:
 	void loadDimensions(json dimensionData);
 	void loadMaterialData(json materialData);
+	void printRawMaterialInformation();
 };

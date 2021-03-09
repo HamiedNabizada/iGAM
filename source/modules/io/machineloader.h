@@ -2,9 +2,8 @@
 #include <iostream>
 #include <filesystem>
 #include <algorithm>
-//#include <nlohmann/json.hpp>
 #include "millingmachine.h"
-
-std::vector<MillingMachine> loadMachines();
+#include "config.h"
+std::vector<MillingMachine> loadMachines(Config &config);
 
 bool isMillingMachine(std::filesystem::path);

@@ -1,6 +1,12 @@
 #include "removableVolume.h"
 
-std::vector<Mesh> computeRemovableVolumes(std::map<std::string, std::vector<Polygon_with_holes_ptr_vector>> offsets, Mesh workingPieceGeometry, Mesh toolGeometry, Mesh convexHull) {
+std::vector<Mesh> computeRemovableVolumes(std::map<std::string, std::vector<Polygon_with_holes_ptr_vector>> offsets, Mesh workingPieceGeometry, Mesh toolGeometry, Mesh convexHull, Config& config, std::filesystem::path out) {
+	std::filesystem::path outputPlanes = out;
+
+	if (config.getSavePlanes()) {
+		outputPlanes /= "planes";
+		std::filesystem::create_directories(outputPlanes);
+	}
 	// Transformieren zu AABB tree für Intersection Computation
 	Tree workingPieceTree(faces(workingPieceGeometry).first, faces(workingPieceGeometry).second, workingPieceGeometry);
 	std::map<double, Mesh> result; // Zwischenspeicher für Planes 
@@ -28,8 +34,8 @@ std::vector<Mesh> computeRemovableVolumes(std::map<std::string, std::vector<Poly
 							z_intersection = p->exact().z().to_double();
 							Point_3 checkPoint = Point_3(x, y, z_intersection);
 							if (z < z_intersection) valid = false; // Falls z-Position nicht sichtbar, nicht aufnehmen
-							Mesh toolTemp = positioningMillingTool(toolGeometry, Point(x, y), z_intersection);
-							checkPosition(workingPieceGeometry, toolTemp, checkPoint);
+							Mesh toolTemp = positioningMillingTool(toolGeometry, Point(x, y), z_intersection, config.getSaveToolPositions(), out);
+							checkPosition(workingPieceGeometry, toolTemp, checkPoint, config.getSaveInterstions(), out);
 							points.push_back(checkPoint);
 						}
 					};
@@ -45,12 +51,14 @@ std::vector<Mesh> computeRemovableVolumes(std::map<std::string, std::vector<Poly
 				// TODO: Herausfinden wie ein eindeutiger Key erstellt wird, um Doppelungen zu vermeiden.
 					if (result.find(res_key) == result.end()) {
 						result.insert(std::pair<double, Mesh>(res_key, sm));
-						std::string zPosition = "plane_" + std::to_string(i) + "_(" + std::to_string(res_key) + "_" + std::to_string(std::rand()) + ")";
-						std::string eps_name = zPosition + ".off";
-						std::ofstream out;
-						out.open(eps_name.c_str());
-						CGAL::write_off(out, sm);
-						output.push_back(computeMinkowskiSum(sm, toolGeometry));
+						if (config.getSavePlanes()) {
+							std::string filename = "plane_" + std::to_string(i) + "_(" + std::to_string(res_key) + "_" + std::to_string(std::rand()) + ").off";
+							std::ofstream outstream(outputPlanes / filename);
+					
+							CGAL::write_off(outstream, sm);
+							outstream.close();
+						}
+						output.push_back(computeMinkowskiSum(sm, toolGeometry, config, out));
 					};
 				};
 			};
@@ -59,22 +67,28 @@ std::vector<Mesh> computeRemovableVolumes(std::map<std::string, std::vector<Poly
 	return output;
 };
 
-Mesh computeMinkowskiSum(Mesh plane, Mesh toolGeometry) {
+Mesh computeMinkowskiSum(Mesh plane, Mesh toolGeometry, Config& config, std::filesystem::path out) {
+
 	Nef_polyhedron planeNef(plane);
 	Nef_polyhedron toolNef(toolGeometry);
 	Nef_polyhedron result = CGAL::minkowski_sum_3(planeNef, toolNef);
 	Mesh output;
 	CGAL::convert_nef_polyhedron_to_polygon_mesh(result, output);
-	std::string fileName = "minkowskisum" + std::to_string(rand()) + ".off";
-	std::ofstream out;
-	out.open(fileName.c_str());
-	out << output;
-	out.close();
+	if (config.getSaveRemovableVolumes()) {
+		std::filesystem::path outputPath = out;
+		outputPath /= "removableVolumes";
+		std::filesystem::create_directories(outputPath);
+		std::string fileName = "minkowskisum" + std::to_string(rand()) + ".off";
+		std::ofstream outstream;
+		outstream.open(outputPath / fileName);
+		outstream << output;
+		outstream.close();
+	};
 	return output;
 };
 
 
-Mesh computeLeftover(std::vector<Mesh> minkowskiSums, Mesh convexHull){
+Mesh computeLeftover(std::vector<Mesh> minkowskiSums, Mesh convexHull, Config& config, std::filesystem::path out){
 	Nef_polyhedron convexHullNef(convexHull);
 	for (int i = 0; i < minkowskiSums.size(); ++i) {
 		Nef_polyhedron msNef(minkowskiSums[i]);
@@ -83,9 +97,9 @@ Mesh computeLeftover(std::vector<Mesh> minkowskiSums, Mesh convexHull){
 	Mesh output;
 	CGAL::convert_nef_polyhedron_to_polygon_mesh(convexHullNef, output);
 	std::string filename = "FinalGeometry.off";
-	std::ofstream out;
-	out.open(filename.c_str());
-	out << output;
-	out.close();
+	std::ofstream outstream;
+	outstream.open(out / filename);
+	outstream << output;
+	outstream.close();
 	return output;
 }

@@ -8,7 +8,6 @@ RawMaterial selectRawMaterial(std::vector<RawMaterial> rawMaterials, Mesh inputG
 	double x_length = bb_cv.xmax() - bb_cv.xmin();
 	double y_length = bb_cv.ymax() - bb_cv.ymin();
 	double z_length = bb_cv.zmax() - bb_cv.zmin();
-	std::cout << "convexHull_x: " << x_length << " y: " << y_length << " z: " << z_length << std::endl;
 	std::vector<RawMaterial> suitableRawMaterials; // Alle Rohteile, in denen Werkstück hineinpasst.
 	
 	for (RawMaterial rm : rawMaterials)
@@ -87,15 +86,15 @@ RawMaterial selectRawMaterial(std::vector<RawMaterial> rawMaterials, Mesh inputG
 		
 		if (rm.volume < selectedRawMaterial.volume)
 		{
-			std::cout << "if anweisung_ Volume.rm: " << rm.volume << "   volumeSelectedRawMaterial: " << selectedRawMaterial.volume << std::endl;
 			selectedRawMaterial = rm;
 		};
 	};
 
 	double convexHullVolume = CGAL::Polygon_mesh_processing::volume(convexHull).exact().to_double();
-	
-	std::cout << "Best fitting raw material: " << selectedRawMaterial.id << "" << std::endl;
+	std::cout << "_______Best fitting raw material____________________" << std::endl;
+	std::cout << "id: " << selectedRawMaterial.id << "" << std::endl;
 	std::cout << "oversized volume: " << selectedRawMaterial.volume - convexHullVolume << std::endl;
+	std::cout << "____________________________________________________" << std::endl;
 	return selectedRawMaterial;
 	
 };

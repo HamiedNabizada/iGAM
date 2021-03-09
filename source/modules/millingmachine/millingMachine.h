@@ -18,6 +18,7 @@
 #include "removableVolume.h"
 #include "rawMaterial.h"
 #include "alignGeometry.h"
+#include "config.h"
 
 using json = nlohmann::json;
 typedef CGAL::Exact_predicates_exact_constructions_kernel   K;
@@ -38,17 +39,16 @@ public:
 	* - jsonFile: Konfigurationsdatei für MillingMachine
 	* - printInformation: Ausgabe der eingelesenen Daten
 	*/
-	MillingMachine(std::filesystem::path pathJsonFile, bool printInformation);
-	//MillingMachine(std::string jsonFile, bool printInformation);
+	MillingMachine(std::filesystem::path pathJsonFile, Config &con);
 	MillingTool millingTool;
-	void checkManufacturability(Mesh workingPieceGeometry, RawMaterial rawMaterial);
+	void checkManufacturability(Mesh workingPieceGeometry, RawMaterial rawMaterial, Config &config);
 
 private:
 	void serializeGeneralInformation(json object);
 	void serializeTechnicalInformation(json object);
 	void printGeneralInformation();
 	void printTechnicalInformation();
-	void loadToolGeometry(std::filesystem::path pathToolFile);
+	void loadToolGeometry(std::filesystem::path pathToolFile, bool printMillingToolInformation);
 
 	std::string company;
 	std::string series;
@@ -57,5 +57,4 @@ private:
 	std::tuple<double, std::string> travelPathX;
 	std::tuple<double, std::string> travelPathY;
 	std::tuple<double, std::string> travelPathZ;
-	//	Mesh millingTool;
 };

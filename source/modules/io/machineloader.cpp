@@ -1,6 +1,6 @@
 #include "machineloader.h"
 
-std::vector<MillingMachine> loadMachines()
+std::vector<MillingMachine> loadMachines(Config &config)
 {
 	std::filesystem::path path = std::filesystem::current_path();
 	path /= "data";
@@ -14,7 +14,7 @@ std::vector<MillingMachine> loadMachines()
 		{
 			if(isMillingMachine(p))
 			{
-				MillingMachine mm = MillingMachine(p.path(), true);
+				MillingMachine mm = MillingMachine(p.path(), config);
 				result.push_back(mm);
 			}		
 		}

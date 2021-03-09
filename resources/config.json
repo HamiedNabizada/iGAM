@@ -1,0 +1,16 @@
+{
+	"saveRemovableVolumes": true,
+	"saveConvexHull": true,
+	"saveIntersections": true,
+	"savePlanes": true,
+	"saveOffset": true,
+	"saveDiffGeometry": true,
+	"saveSelectedRawMaterial": true,
+	"saveToolPositions": true,
+	"saveSelectedRawMaterial": true,
+	"printMachineInformation": false,
+	"printMillingToolInformation": false,
+	"printImportInformation": false,
+	"printRawMaterialInformation": true
+
+}

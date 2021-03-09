@@ -1,7 +1,7 @@
 #include "rawMaterialLoader.h"
 
 
-std::vector<RawMaterial> loadRawMaterial()
+std::vector<RawMaterial> loadRawMaterial(Config &config)
 {
 	std::filesystem::path path = std::filesystem::current_path();
 	path /= "data";
@@ -17,7 +17,7 @@ std::vector<RawMaterial> loadRawMaterial()
 			json jsonData;
 			filestream >> jsonData;
 			filestream.close();
-			RawMaterial rm(jsonData, false);
+			RawMaterial rm(jsonData, config.getPrintRawMaterialInformation());
 			result.push_back(rm);
 		}	
 	};
