@@ -1,0 +1,8 @@
+{
+  "name": "igma",
+  "version-string": "0.1.0-dev",
+  "dependencies": [
+    { "name": "nlohmann-json", "version>=": "3.9.1" }
+  ],
+  "builtin-baseline":"0dc27b9b672cb9d069cf58c48f3ae3f7395d108b"
+}

@@ -1,0 +1,31 @@
+{
+	"generalInformation": {
+		"company": "Wagner",
+		"series": "WFZ 360 V",
+		"machinetype": "Cross table milling machine",
+		"applicationarea": "Milling and drilling of small parts",
+		"specials": "Cycle control",
+		"MainSpindlePosition": "Vertical",
+		"LinearToolAxes": "One: Z",
+		"LinearWorkpieceAxes": "Two: X, Y"
+	},
+	"technicalData": {
+		"axis": {
+			"x": {
+				"travelPath": 790.0,
+				"dimension": "mm"
+			},
+			"y": {
+				"travelPath": 508.0,
+				"dimension": "mm"
+			},
+			"z": {
+				"travelPath": 584.0,
+				"dimension": "mm"
+			}
+		}
+	},
+	"tools": {
+		"filename": "millingtool_flatend.off"
+	}
+}

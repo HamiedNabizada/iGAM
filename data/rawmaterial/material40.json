@@ -1,0 +1,23 @@
+{
+	"id": "12",
+	"quantity": 3,
+	"dimension":{
+		"Height":{
+			"MaxDimension": 30.0,
+			"MinDimension": 0.0
+		},
+		"Width":{
+			"MaxDimension": 40.0,
+			"MinDimension": 0.0
+		},
+		"Length":{
+			"MaxDimension": 10.0,
+			"MinDimension": 0.0
+		}
+	},
+	"GeometricalDesign": "",
+	"InitialRoughness": 0.0,
+	"Material":{
+		"name": "nA"	
+	}
+}

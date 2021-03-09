@@ -1,0 +1,4 @@
+add_subdirectory(io)
+add_subdirectory(geometrypreprocessing)
+add_subdirectory(rawmaterial)
+add_subdirectory(millingmachine)
