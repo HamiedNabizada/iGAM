@@ -1,7 +1,6 @@
 #include "millingMachine.h"
 
-MillingMachine::MillingMachine(std::filesystem::path pathJsonFile, Config &config) {
-	
+MillingMachine::MillingMachine(std::filesystem::path pathJsonFile, Config& config) {
 	std::cout << "Loading milling machine from file: " << pathJsonFile.string() << std::endl;
 	std::ifstream filestream(pathJsonFile.c_str());
 	json jsonData;
@@ -19,14 +18,34 @@ MillingMachine::MillingMachine(std::filesystem::path pathJsonFile, Config &confi
 	};
 };
 
-void MillingMachine::checkManufacturability(Mesh workingPieceGeometry, RawMaterial rawMaterial, Config &config) {
+void MillingMachine::checkManufacturability(Mesh workingPieceGeometry, RawMaterial rawMaterial, Config& config) {
 	std::filesystem::path outputPath = std::filesystem::current_path();
-	
+
 	outputPath /= this->company;
 	outputPath /= this->series;
 	std::filesystem::create_directories(outputPath);
+	std::ofstream ofs;
+	for (Direction direction : all_Direction) {
+		std::string filename = "tool_" + direction_to_string(direction) + ".off";
+		ofs.open(outputPath / filename);
+		CGAL::write_off(ofs, alignMillingTool(millingTool.toolGeometry, workingPieceGeometry, direction));
+		ofs.close();
+	}
+	/*
+	Mesh tool1 = alignMillingTool(millingTool.toolGeometry, workingPieceGeometry, Direction::z_negative);
+	Mesh tool2 = alignMillingTool(millingTool.toolGeometry, workingPieceGeometry, Direction::z_positive);
+	std::ofstream ofs;
+	ofs.open(outputPath / "tool_zneg.off");
+	CGAL::write_off(ofs, tool1);
+	ofs.close();
+	ofs.open(outputPath / "tool_zpos.off");
+	CGAL::write_off(ofs, tool2);
+	ofs.close();*/
+	analysis.push_back(ManufacturabilityAnalysis(config, outputPath, Direction::z_negative, rawMaterial, workingPieceGeometry, millingTool));
 
-	// Step0: Check if rawMaterial fit
+
+	/*
+	// Step0: Check if rawMaterial fit (TODO)
 	rawMaterial.geometry = centerGeometry(rawMaterial.geometry, false);
 	std::ofstream ofs;
 	if (config.getSaveSelectedRawMaterial()) {
@@ -56,13 +75,14 @@ void MillingMachine::checkManufacturability(Mesh workingPieceGeometry, RawMateri
 	std::map<std::string, std::vector<Polygon_2>> slicesDiffGeometryPolygon = sliceDiffGeometry(diffGeometryMesh);
 
 	// Step4: Compute Offset
-	std::map<std::string, std::vector<Polygon_with_holes_ptr_vector>> offsets = computeOffset(millingTool.diameter / 2.0, slicesDiffGeometryPolygon, config.getSaveOffests(), outputPath);
+	std::map<std::string, std::vector<Polygon_with_holes_ptr_vector>> offsets = computeOffset(millingTool.diameter / 2.0, convexHullMesh, slicesDiffGeometryPolygon, config.getSaveOffests(), outputPath);
 
 	// Step5: Minkowski Summen der abtragbaren volumen erstellen (TODO: Richtige CD implementieren)
-	std::vector<Mesh> removableVolumes = computeRemovableVolumes(offsets, workingPieceGeometry, millingTool.toolGeometry, convexHullMesh, config, outputPath);
+	std::vector<Mesh> removableVolumes = computeRemovableVolumes(offsets, workingPieceGeometry, millingTool, convexHullMesh, config, outputPath);
 
 	// Step6: Compute final geometry
 	computeLeftover(removableVolumes, convexHullMesh, config, outputPath);
+	*/
 };
 
 void MillingMachine::loadToolGeometry(std::filesystem::path pathToolFile, bool printMillingToolInformation) {

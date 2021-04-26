@@ -9,12 +9,12 @@ RawMaterial selectRawMaterial(std::vector<RawMaterial> rawMaterials, Mesh inputG
 	double y_length = bb_cv.ymax() - bb_cv.ymin();
 	double z_length = bb_cv.zmax() - bb_cv.zmin();
 	std::vector<RawMaterial> suitableRawMaterials; // Alle Rohteile, in denen Werkstück hineinpasst.
-	
+
 	for (RawMaterial rm : rawMaterials)
 	{
 		std::vector<double> dimensions = { x_length, y_length, z_length };
 		std::sort(dimensions.begin(), dimensions.end());
-		
+
 		double height_rm = rm.height[1] - rm.height[0];
 		double width_rm = rm.width[1] - rm.width[0];
 		double length_rm = rm.height[1] - rm.height[0];
@@ -80,10 +80,9 @@ RawMaterial selectRawMaterial(std::vector<RawMaterial> rawMaterials, Mesh inputG
 		};
 	};
 	RawMaterial selectedRawMaterial = suitableRawMaterials.at(0);
-	
+
 	for (RawMaterial rm : suitableRawMaterials)
 	{
-		
 		if (rm.volume < selectedRawMaterial.volume)
 		{
 			selectedRawMaterial = rm;
@@ -96,5 +95,4 @@ RawMaterial selectRawMaterial(std::vector<RawMaterial> rawMaterials, Mesh inputG
 	std::cout << "oversized volume: " << selectedRawMaterial.volume - convexHullVolume << std::endl;
 	std::cout << "____________________________________________________" << std::endl;
 	return selectedRawMaterial;
-	
 };

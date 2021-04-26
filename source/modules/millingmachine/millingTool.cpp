@@ -1,9 +1,6 @@
 #include "millingTool.h"
 
-
-
 void MillingTool::loadMillingTool(std::filesystem::path pathToolFile) {
-	
 	name = pathToolFile.filename().string();
 	toolGeometry = importerOff(pathToolFile, true);
 	toolGeometry = centerGeometry(toolGeometry, true);

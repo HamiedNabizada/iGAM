@@ -1,3 +1,4 @@
+add_subdirectory(misc)
 add_subdirectory(io)
 add_subdirectory(geometrypreprocessing)
 add_subdirectory(rawmaterial)

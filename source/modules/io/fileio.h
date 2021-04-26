@@ -4,7 +4,7 @@
 #include <filesystem>
 //#include <CGAL/Exact_predicates_inexact_constructions_kernel.h> // Kernel
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-#include <CGAL/Surface_mesh.h> 
+#include <CGAL/Surface_mesh.h>
 #include <CGAL/Polygon_mesh_processing/measure.h>
 //typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 typedef CGAL::Exact_predicates_exact_constructions_kernel   K;

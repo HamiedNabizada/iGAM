@@ -18,19 +18,20 @@ if ( NOT CGAL_FOUND )
   return()
 endif()
 
-find_package ( GMP )
-if (NOT GMP_FOUND)
-	message(STATUS "GMP NOT FOUND")
-endif()
+find_package(Boost REQUIRED)
+find_package(Eigen3 REQUIRED)
+include(CGAL_Eigen_support)
+
 
 find_package(nlohmann_json REQUIRED) #JSON-Lib: https://github.com/nlohmann/json
+
 
 #Module
 add_subdirectory(source/modules)
 
 #create_single_source_cgal_program( "main.cpp")
 add_executable(Program source/main.cpp)
-target_link_libraries(Program PUBLIC CGAL::CGAL nlohmann_json IO geometryPreprocessing rawMaterial millingmachine)
+target_link_libraries(Program PUBLIC CGAL::CGAL nlohmann_json misc IO geometryPreprocessing rawMaterial millingmachine)
 add_custom_command(TARGET Program POST_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
                        ${CMAKE_SOURCE_DIR}/resources/ $<TARGET_FILE_DIR:Program>)

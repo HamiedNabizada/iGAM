@@ -4,5 +4,7 @@ add_library(geometryPreprocessing
 			alignGeometry.cpp
 			alignGeometry.h)
 			
-target_link_libraries(geometryPreprocessing PUBLIC CGAL::CGAL)
+target_include_directories(geometryPreprocessing PUBLIC ../misc)
+
+target_link_libraries(geometryPreprocessing PUBLIC CGAL::CGAL Boost::boost misc )
 			

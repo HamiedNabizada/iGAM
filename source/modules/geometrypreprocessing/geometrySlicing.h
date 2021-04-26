@@ -9,6 +9,7 @@
 #include <CGAL/Polygon_mesh_slicer.h>
 #include <CGAL/Polygon_mesh_processing/corefinement.h>
 #include <CGAL/Bbox_3.h>
+#include "enums.h"
 
 
 //typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
@@ -24,4 +25,4 @@ typedef std::list< Polyline_type >                          Polylines;
 1. Berechnet CuttingDistance (Kleinster Face des Meshs dividiert durch 2)
 2. Zerlegt Geometrie in Slices im Abstand zuvor berechneter CuttingDistance
 */
-std::map<std::string, std::vector<Polygon_2>> sliceDiffGeometry(Mesh difGeometry);
+std::map<std::string, std::vector<Polygon_2>> sliceDiffGeometry(Mesh difGeometry, Direction direction);

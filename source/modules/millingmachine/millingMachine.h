@@ -19,6 +19,8 @@
 #include "rawMaterial.h"
 #include "alignGeometry.h"
 #include "config.h"
+#include "enums.h"
+#include "manufacturabilityAnalysis.h"
 
 using json = nlohmann::json;
 typedef CGAL::Exact_predicates_exact_constructions_kernel   K;
@@ -30,7 +32,6 @@ typedef CGAL::Polygon_with_holes_2<K>                       Polygon_with_holes;
 typedef boost::shared_ptr<Polygon_with_holes>               Polygon_with_holes_ptr;
 typedef std::vector<Polygon_with_holes_ptr>                 Polygon_with_holes_ptr_vector;
 
-
 class MillingMachine
 {
 public:
@@ -39,9 +40,10 @@ public:
 	* - jsonFile: Konfigurationsdatei für MillingMachine
 	* - printInformation: Ausgabe der eingelesenen Daten
 	*/
-	MillingMachine(std::filesystem::path pathJsonFile, Config &con);
+	MillingMachine(std::filesystem::path pathJsonFile, Config& con);
 	MillingTool millingTool;
-	void checkManufacturability(Mesh workingPieceGeometry, RawMaterial rawMaterial, Config &config);
+	void checkManufacturability(Mesh workingPieceGeometry, RawMaterial rawMaterial, Config& config);
+	std::vector<ManufacturabilityAnalysis> analysis;
 
 private:
 	void serializeGeneralInformation(json object);
@@ -49,7 +51,6 @@ private:
 	void printGeneralInformation();
 	void printTechnicalInformation();
 	void loadToolGeometry(std::filesystem::path pathToolFile, bool printMillingToolInformation);
-
 	std::string company;
 	std::string series;
 	std::string machineType;

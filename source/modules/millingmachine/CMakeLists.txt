@@ -2,7 +2,9 @@ add_library(millingmachine
 			millingMachine.cpp
 			millingMachine.h
 			millingTool.cpp
-			millingTool.h 
+			millingTool.h
+			manufacturabilityAnalysis.cpp
+			manufacturabilityAnalysis.h 
 			positioningMillingTool.cpp 
 			positioningMillingTool.h
 			computeOffset.cpp
@@ -10,8 +12,8 @@ add_library(millingmachine
 			removableVolume.cpp
 			removableVolume.h)
 
-target_include_directories(millingmachine PUBLIC ../io ../geometrypreprocessing ../rawMaterial)
+target_include_directories(millingmachine PUBLIC ../io ../misc ../geometrypreprocessing ../rawMaterial)
 
 
-target_link_libraries(millingmachine PUBLIC CGAL::CGAL IO geometryPreprocessing nlohmann_json rawMaterial)
+target_link_libraries(millingmachine PUBLIC CGAL::CGAL CGAL::Eigen_support misc IO geometryPreprocessing nlohmann_json rawMaterial)
 			

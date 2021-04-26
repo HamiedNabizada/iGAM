@@ -11,19 +11,15 @@
 #include "modules/rawmaterial/rawMaterialLoader.h"
 #include "modules/rawmaterial/rawMaterialSelection.h"
 
-
-
 typedef CGAL::Exact_predicates_exact_constructions_kernel   K;
 typedef K::Point_3                                          Point_3;
 typedef CGAL::Surface_mesh<Point_3>							Mesh;
-
 
 int main(int argc, char* argv[])
 {
 	auto start = std::chrono::high_resolution_clock::now();
 
 	Config config;
-
 
 	const char* filename = (argc > 1) ? argv[1] : "testbauteil_nachz_ausgerichtet_negativz.off";
 	std::cout << filename << std::endl;
@@ -37,9 +33,9 @@ int main(int argc, char* argv[])
 		std::cout << "check folder //data//rawmaterial" << std::endl;
 		return 0;
 	};
-	
+
 	RawMaterial selectedRawMaterial = selectRawMaterial(rawMaterials, inputMesh);
-	
+
 	std::vector<MillingMachine> millingmachines = loadMachines(config);
 	if (millingmachines.empty())
 	{
@@ -53,10 +49,9 @@ int main(int argc, char* argv[])
 		mm.checkManufacturability(inputMesh, selectedRawMaterial, config);
 	};
 
-
 	auto stop = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::seconds>(stop - start);
 	std::cout << "Time taken by program: " << duration.count() << " seconds" << std::endl;
-	
+
 	return 0;
 }
