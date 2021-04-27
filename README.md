@@ -1,4 +1,4 @@
-# iGMA: industrial Geometric Manufacturability Analysis (Standalone version)
+# iGMA: industrial Geometric Manufacturability Analysis
 iGMA analyses the geometry of a workpiece, checks whether suitable raw materials are in stock and analyses if existing 3-axis milling machines are capable of producing this workpiece.
 
 ## Prerequisites
